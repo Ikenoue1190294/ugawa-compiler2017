@@ -8,8 +8,47 @@ import parser.TinyPiELexer;
 import parser.TinyPiEParser;
 
 public class Interpreter extends InterpreterBase {
+	//演習4
 	int evalExpr(ASTNode ndx, Environment env) {
-		throw new Error("Not implemented yet");
+		if (ndx instanceof ASTBinaryExprNode) {
+			ASTBinaryExprNode nd = (ASTBinaryExprNode) ndx;
+			int lhsValue = evalExpr(nd.lhs, env);
+			int rhsValue = evalExpr(nd.rhs, env);
+			if (nd.op.equals("+"))
+				return lhsValue + rhsValue;
+			//else if (nd.op.equals("-"))
+			//	return lhsValue - rhsValue;
+			else if (nd.op.equals("*"))
+				return lhsValue * rhsValue;
+			else if (nd.op.equals("/"))
+				return lhsValue / rhsValue;
+			else if (nd.op.equals("&"))
+				return lhsValue & rhsValue;
+			else if (nd.op.equals("|"))
+				return lhsValue | rhsValue;
+			else 
+				throw new Error("Unknwon operator: "+nd.op);
+		} else if (ndx instanceof ASTUnaryExprNode) {
+			ASTUnaryExprNode nd = (ASTUnaryExprNode) ndx;
+			int hsValue = evalExpr(nd.hs, env);
+			if (nd.op.equals("~"))
+				return ~ hsValue;
+			else if (nd.op.equals("-"))
+				return - hsValue;
+			else
+				throw new Error("Unknwon operator: "+nd.op);
+		} else if (ndx instanceof ASTNumberNode) {
+			ASTNumberNode nd = (ASTNumberNode) ndx;
+			return nd.value;
+		} else if (ndx instanceof ASTVarRefNode) {
+			ASTVarRefNode nd = (ASTVarRefNode) ndx;
+			Variable var = env.lookup(nd.varName);
+			if (var == null)
+				throw new Error("Undefined variable: "+nd.varName);
+			return var.get();
+		} else {
+			throw new Error("Unknwon expression: "+ndx);
+		}
 	}
 
 	public int eval(ASTNode ast) {

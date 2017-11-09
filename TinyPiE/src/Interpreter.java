@@ -30,7 +30,7 @@ public class Interpreter extends InterpreterBase {
 				throw new Error("Unknwon operator: "+nd.op);
 		} else if (ndx instanceof ASTUnaryExprNode) {
 			ASTUnaryExprNode nd = (ASTUnaryExprNode) ndx;
-			int hsValue = evalExpr(nd.hs, env);
+			int hsValue = evalExpr(nd.operand, env);
 			if (nd.op.equals("~"))
 				return ~ hsValue;
 			else if (nd.op.equals("-"))

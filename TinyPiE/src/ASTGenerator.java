@@ -34,13 +34,16 @@ public class ASTGenerator {
 			ASTNode rhs = translateExpr(ctx.addExpr());
 			return new ASTBinaryExprNode(ctx.ANDOP().getText(), lhs, rhs); 
 		}
+		//add
 		else if (ctxx instanceof AddExprContext) {
 			AddExprContext ctx = (AddExprContext) ctxx;
 			if (ctx.addExpr() == null)
 				return translateExpr(ctx.mulExpr());
 			ASTNode lhs = translateExpr(ctx.addExpr());
 			ASTNode rhs = translateExpr(ctx.mulExpr());
-			return new ASTBinaryExprNode(ctx.ADDOP().getText(), lhs, rhs); 
+			if (ctx.ADDOP() == null)
+				return new ASTBinaryExprNode(ctx.SUBOP().getText(), lhs, rhs);
+			else return new ASTBinaryExprNode(ctx.ADDOP().getText(), lhs, rhs);
 		}else if (ctxx instanceof MulExprContext) {
 			MulExprContext ctx = (MulExprContext) ctxx;
 			if (ctx.mulExpr() == null)
@@ -64,7 +67,7 @@ public class ASTGenerator {
 		else if (ctxx instanceof SubExprContext) {
 			SubExprContext ctx = (SubExprContext) ctxx;
 			ASTNode hs = translateExpr(ctx.unaryExpr());
-			return  new ASTUnaryExprNode(ctx.SUBOP().getText(), hs);
+			return  new ASTUnaryExprNode(ctx.NOTOP().getText(), hs);
 		}
 		throw new Error("Unknown parse tree node: "+ctxx.getText());		
 	}

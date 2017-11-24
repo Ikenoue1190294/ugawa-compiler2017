@@ -1,5 +1,5 @@
     .section .data
-    @ 大域変数の定義
+    // 大域変数の定義
 _Pi_var_x:
     .word 1
 _Pi_var_y:
@@ -9,7 +9,7 @@ _Pi_var_z:
     .section .text
     .global _start
 _start:
-    @ 式をコンパイルした命令列
+    // 式をコンパイルした命令列
     ldr r0, =#2
     str r1, [sp, #-4]!
     mov r1, r0
@@ -23,6 +23,6 @@ _start:
     ldr r1, [sp], #4
     mul r0, r1, r0
     ldr r1, [sp], #4
-    @ EXITシステムコールを発行
+    // EXITシステムコールを発行
     mov r7, #1
     swi #0

@@ -13,6 +13,7 @@ andExpr: andExpr ANDOP addExpr
 	;
 	
 addExpr: addExpr ADDOP mulExpr
+	| addExpr SUBOP mulExpr
 	| mulExpr
 	;
 
@@ -23,11 +24,12 @@ mulExpr: mulExpr MULOP unaryExpr
 unaryExpr: VALUE			# literalExpr
 	| IDENTIFIER			# varExpr
 	| '(' expr ')'			# parenExpr
-	| SUBOP unaryExpr		# subExpr
+	| (SUBOP|NOTOP) unaryExpr		# subExpr
 	;
 
 ADDOP: '+';
-SUBOP: '-'|'~';
+SUBOP: '-';
+NOTOP: '~';
 MULOP: '*'|'/';
 OROP: '|';
 ANDOP: '&';

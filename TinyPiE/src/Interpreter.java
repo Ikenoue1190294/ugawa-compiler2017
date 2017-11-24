@@ -16,8 +16,8 @@ public class Interpreter extends InterpreterBase {
 			int rhsValue = evalExpr(nd.rhs, env);
 			if (nd.op.equals("+"))
 				return lhsValue + rhsValue;
-			//else if (nd.op.equals("-"))
-			//	return lhsValue - rhsValue;
+			else if (nd.op.equals("-"))
+				return lhsValue - rhsValue;
 			else if (nd.op.equals("*"))
 				return lhsValue * rhsValue;
 			else if (nd.op.equals("/"))

@@ -13,10 +13,19 @@ stmt: '{' stmt* '}'			# compoundStmt
     | 'while' '(' expr ')' stmt	    	# whileStmt
     ;
 
-expr: addExpr
+expr: orExpr
       ;
 
+orExpr: orExpr OROP andExpr
+	| andExpr
+	;
+
+andExpr: andExpr ANDOP addExpr
+	| addExpr
+	;
+
 addExpr: addExpr ADDOP mulExpr
+	| addExpr SUBOP mulExpr
 	| mulExpr
 	;
 
@@ -27,10 +36,15 @@ mulExpr: mulExpr MULOP unaryExpr
 unaryExpr: VALUE			# literalExpr
 	| IDENTIFIER			# varExpr
 	| '(' expr ')'			# parenExpr
+	| (SUBOP|NOTOP) unaryExpr		# subExpr
 	;
 
-ADDOP: '+'|'-';
+ADDOP: '+';
+SUBOP: '-';
+NOTOP: '~';
 MULOP: '*'|'/';
+OROP: '|';
+ANDOP: '&';
 IDENTIFIER: [a-zA-Z_][a-zA-Z_0-9]*;
-VALUE: [0-9]+;
+VALUE: [0-9]|[1-9][0-9]*;
 WS: [ \t\r\n] -> skip;

@@ -18,7 +18,6 @@ class ASTProgNode extends ASTNode {
 		return s;
 	}
 }
-
 class ASTCompoundStmtNode extends ASTNode {
 	ArrayList<ASTNode> stmts;
 	ASTCompoundStmtNode(ArrayList<ASTNode> stmts) {
@@ -87,6 +86,19 @@ class ASTBinaryExprNode extends ASTNode {
 	@Override
 	public String toString() {
 		return "(BinExpr "+op+" "+lhs+" "+rhs+")";
+	}
+}
+
+class ASTUnaryExprNode extends ASTNode {
+	String op;
+	ASTNode operand;
+	ASTUnaryExprNode(String op, ASTNode operand) {
+		this.op = op;
+		this.operand = operand;
+	}
+	@Override
+	public String toString() {
+		return "(UnExpr "+op+" "+operand+")";
 	}
 }
 

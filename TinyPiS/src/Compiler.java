@@ -99,7 +99,59 @@ public class Compiler extends CompilerBase {
 			compileStmt(nd.stmt, env);
 			emitJMP("b", backLabel);
 			emitLabel(endLabel);
-		} else
+		} else if (ndx instanceof ASTPrintStmtNode) {
+			//Print文
+			ASTPrintStmtNode nd = (ASTPrintStmtNode) ndx;
+			//String startLabel = freshLabel();
+			String loopLabel = freshLabel();
+			String jmp1Label = freshLabel();
+			String jmp2Label = freshLabel();
+			String jmp3Label = freshLabel();
+			emitPUSH(REG_DST);
+			emitPUSH(REG_R1);
+			emitPUSH(REG_R2);
+			emitPUSH(REG_R3);
+			emitPUSH(REG_R4);
+			emitPUSH(REG_R5);
+			emitPUSH(REG_R7);
+			//emitLabel(startLabel);
+			compileExpr(nd.expr, env);
+			emitRI("mov", REG_R1, 8);
+			emitRI("mov", REG_R2, 16);
+			emitRR("ldr", REG_R3, "=buf + 8");
+			emitLabel(loopLabel);
+			emitRRR("udiv", REG_R4, REG_DST, REG_R2);
+			emitRRR("mul", REG_R5, REG_R4, REG_R2);
+			emitRRR("sub", REG_R5, REG_DST, REG_R5);
+			emitRI("cmp", REG_R5, 10);
+			emitJMP("bcs", jmp1Label);
+			emitRI("add", REG_R5, '0'); //?
+			emitLabel(jmp2Label);
+			emitSTRB(REG_R5, REG_R3, -1);
+			emitRR("mov", REG_DST, REG_R4);
+			emitRI("subs", REG_R1, 1);
+			emitJMP("bne", loopLabel);
+			emitJMP("b", jmp3Label);
+			emitLabel(jmp1Label);
+			emitRI("add", REG_R5, 'A');
+			emitRI("sub", REG_R5, 10);
+			emitJMP("b", jmp2Label);
+			emitLabel(jmp3Label);
+			emitRI("mov", REG_R7, 4);
+			emitRI("mov", REG_DST, 1);
+			emitRR("ldr", REG_R1, "=buf");
+			emitRI("mov", REG_R2, 9);
+			emitI("swi", 0);
+			emitPOP(REG_R7);
+			emitPOP(REG_R5);
+			emitPOP(REG_R4);
+			emitPOP(REG_R3);
+			emitPOP(REG_R2);
+			emitPOP(REG_R1);
+			emitPOP(REG_DST);
+		}
+		
+		else
 			throw new Error("Unknown expression: "+ndx);
 	}
 	//演習11図33
@@ -126,11 +178,17 @@ public class Compiler extends CompilerBase {
 		System.out.println("\t@ 式をコンパイルした命令列");
 		compileStmt(prog.stmt, env);
 		System.out.println("\t@ EXITシステムコール");
+		
 		GlobalVariable v = (GlobalVariable) env.lookup("answer");
 		emitLDC(REG_DST, v.getLabel()); // 変数 answer の値を ro (終了コード)に入れる
 		emitLDR("r0", REG_DST, 0);
 		emitRI("mov", "r7", 1); // EXIT のシステムコール番号
 		emitI("swi", 0);
+		//演習13
+		System.out.println("\t.section .data");
+		emitLabel("buf");
+		System.out.println("\t.space 8, 0");
+		System.out.println("\t.byte 0x0a");
 	}
 
 	public static void main(String[] args) throws IOException {

@@ -11,6 +11,7 @@ stmt: '{' stmt* '}'			# compoundStmt
     | IDENTIFIER '=' expr ';'		# assignStmt
     | 'if' '(' expr ')' stmt 'else' stmt  # ifStmt
     | 'while' '(' expr ')' stmt	    	# whileStmt
+    | 'print' expr ';'	# printStmt 
     ;
 
 expr: orExpr

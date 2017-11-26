@@ -74,7 +74,14 @@ public class Interpreter extends InterpreterBase {
 			ASTWhileStmtNode nd = (ASTWhileStmtNode) ndx;
 			while (evalExpr(nd.cond, env) != 1)
 				evalStmt(nd.cond, env);
-		} else
+		}
+		// 演習13
+		else if (ndx instanceof ASTPrintStmtNode) {
+			ASTPrintStmtNode nd = (ASTPrintStmtNode) ndx;
+			int expr = evalExpr(nd.expr, env);
+			System.out.println(String.format("%08X", expr));
+		}
+		else
 			throw new Error("Unknown statement:" +ndx);
 			
 		}
@@ -93,7 +100,7 @@ public class Interpreter extends InterpreterBase {
 		Variable varAnswer = env.lookup("answer");
 		return varAnswer.get();
 	}
-
+	
 	public static void main(String[] args) throws IOException {
 		ANTLRInputStream input = new ANTLRInputStream(System.in);
 		TinyPiSLexer lexer = new TinyPiSLexer(input);

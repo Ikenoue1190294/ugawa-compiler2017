@@ -10,9 +10,17 @@ import parser.TinyPiEParser;
 public class Compiler extends CompilerBase {
 	void compileExpr(ASTNode ndx, Environment env) {
 		//チュートリアル7.図18参照
-		if (ndx instanceof ASTBinaryExprNode) {
+		if (ndx instanceof ASTUnaryExprNode) {
+			ASTUnaryExprNode nd = (ASTUnaryExprNode) ndx;
+			if (nd.op.equals("~"))
+				emitRR("MVN", REG_DST, REG_DST);
+			else if (nd.op.equals("-"))
+				emitRR("MVN", REG_DST, REG_DST);
+				emitRRI("add", REG_DST, REG_DST, 1);
+		}
+		else if (ndx instanceof ASTBinaryExprNode) {
 			ASTBinaryExprNode nd = (ASTBinaryExprNode) ndx;
-			compilerExpr(nd.lhs, env);
+			compileExpr(nd.lhs, env);
 			emitPUSH(REG_R1);
 			emitRR("mov", REG_R1, REG_DST);
 			compileExpr(nd.rhs, env);
@@ -24,10 +32,17 @@ public class Compiler extends CompilerBase {
 				emitRRR("mul", REG_DST, REG_R1, REG_DST);
 			else if (nd.op.equals("/"))
 				emitRRR("udiv", REG_DST, REG_R1, REG_DST);
+			else if (nd.op.equals("&"))
+				emitRRR("and", REG_DST, REG_R1, REG_DST);
+			else if (nd.op.equals("|"))
+				emitRRR("orr", REG_DST, REG_R1, REG_DST);
 			else
 				throw new Error("Unknow operator: "+nd.op);
 			emitPOP (REG_R1);
-		} else if (ndx instanceof ASTNumberNode) {
+		} 
+		
+		
+		else if (ndx instanceof ASTNumberNode) {
 			ASTNumberNode nd = (ASTNumberNode) ndx;
 			emitLDC(REG_DST, nd.value);
 		} else if (ndx instanceof ASTVarRefNode) {
@@ -36,7 +51,7 @@ public class Compiler extends CompilerBase {
 			if (var == null)
 				throw new Error("Undefind variable: "+nd.varName);
 			if (var instanceof GlobalVariable) {
-				GlobalVariable globalVar = (GrobalVariable) var;
+				GlobalVariable globalVar = (GlobalVariable) var;
 				emitLDC(REG_DST, globalVar.getLabel());
 				emitLDR(REG_DST, REG_DST, 0);
 			} else
@@ -44,14 +59,14 @@ public class Compiler extends CompilerBase {
 			} else
 				throw new Error("Unknown expression: "+ndx);
 		}
-	}
+	
 	
 	void compile(ASTNode ast) {
 		//チュートリアル7.図21
 		Environment env = new Environment();
-		GlovalVariable vx = addGlobalVariable(env, "x");
-		GlovalVariable vy = addGlobalVariable(env, "y");
-		GlovalVariable vz = addGlobalVariable(env, "z");
+		GlobalVariable vx = addGlobalVariable(env, "x");
+		GlobalVariable vy = addGlobalVariable(env, "y");
+		GlobalVariable vz = addGlobalVariable(env, "z");
 		
 		System.out.println("\t.section .data");
 		System.out.println("\t@ 大域変数の定義");

@@ -7,8 +7,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import parser.TinyPiELexer;
 import parser.TinyPiEParser;
 
-public class Interpreter extends InterpreterBase {
-	//演習4
+public class Interpreter extends InterpreterBase { //演習4
 	int evalExpr(ASTNode ndx, Environment env) {
 		if (ndx instanceof ASTBinaryExprNode) {
 			ASTBinaryExprNode nd = (ASTBinaryExprNode) ndx;

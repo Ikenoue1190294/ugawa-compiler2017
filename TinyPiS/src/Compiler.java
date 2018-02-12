@@ -12,11 +12,14 @@ public class Compiler extends CompilerBase {
 	void compileExpr(ASTNode ndx, Environment env) {
 		if (ndx instanceof ASTUnaryExprNode) {
 			ASTUnaryExprNode nd = (ASTUnaryExprNode) ndx;
-			if (nd.op.equals("~"))
-				emitRR("MVN", REG_DST, REG_DST);
-			else if (nd.op.equals("-"))
-				emitRR("MVN", REG_DST, REG_DST);
+			compileExpr(nd.operand, env);
+			if (nd.op.equals("-")) {
+				emitRR("mvn", REG_DST, REG_DST);
 				emitRRI("add", REG_DST, REG_DST, 1);
+			}
+			else if (nd.op.equals("~")) {
+				emitRR("mvn", REG_DST, REG_DST);
+			}
 		}
 		else if (ndx instanceof ASTBinaryExprNode) {
 			ASTBinaryExprNode nd = (ASTBinaryExprNode) ndx;
@@ -39,7 +42,9 @@ public class Compiler extends CompilerBase {
 			else
 				throw new Error("Unknwon operator: "+nd.op);
 			emitPOP(REG_R1);
-		} else if (ndx instanceof ASTNumberNode) {
+		} 
+		
+		else if (ndx instanceof ASTNumberNode) {
 			ASTNumberNode nd = (ASTNumberNode) ndx;
 			emitLDC(REG_DST, nd.value);
 		} else if (ndx instanceof ASTVarRefNode) {

@@ -67,7 +67,9 @@ public class ASTGenerator {
 		else if (ctxx instanceof SubExprContext) {
 			SubExprContext ctx = (SubExprContext) ctxx;
 			ASTNode hs = translateExpr(ctx.unaryExpr());
-			return  new ASTUnaryExprNode(ctx.NOTOP().getText(), hs);
+			if (ctx.NOTOP() == null)
+				return new ASTUnaryExprNode(ctx.SUBOP().getText(), hs);
+			else return  new ASTUnaryExprNode(ctx.NOTOP().getText(), hs);
 		}
 		throw new Error("Unknown parse tree node: "+ctxx.getText());		
 	}
